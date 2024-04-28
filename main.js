@@ -1,9 +1,11 @@
 const express = require('express');
 const app = express();
-const db = require('./config/database')
+const db = require('./config/database.js')
 const PORT = 3000;
 
 app.use(express.json());
+app.use("/products", require("./routes/products.js"));
+app.use("/categories", require("./routes/categories.js"));
 
 app.get('/createdb', (req,res) => {
 let sql = 'CREATE DATABASE expressDB';
@@ -41,26 +43,6 @@ app.get('/createproductscategoriestable',(req,res)=>{
         });
     });
 
-app.post("/", (req, res) => {
-    console.log(req.body);
-    let sql = `INSERT INTO products (product_name, product_price, product_brand, product_description) values ('${req.body.product_name}', '${req.body.product_price}', '${req.body.product_brand}', '${req.body.product_description}');`;
-    db.query(sql, (err, result) => {
-        if (err) throw err;
-        console.log(result);
-        res.send("Post added...");
-    });
-});
-
-app.post("/addcategorie", (req, res) => {
-    console.log(req.body);
-    let sql = `INSERT INTO categories (categorie_name) values ('${req.body.categorie_name}');`;
-    db.query(sql, (err, result) => {
-        if (err) throw err;
-        console.log(result);
-        res.send("Post added...");
-    });
-});
-
 app.post("/addproductscategorie", (req, res) => {
     console.log(req.body);
     let sql = `INSERT INTO products_categories (product_id, categorie_id) VALUES (1, 1), (2, 2);`;
@@ -68,38 +50,6 @@ app.post("/addproductscategorie", (req, res) => {
         if (err) throw err;
         console.log(result);
         res.send("Post added...");
-    });
-});
-    
-app.put('/products/id/:id',(req,res)=>{
-    let sql = `UPDATE products SET product_price = '${req.body.product_price}' WHERE id = ${req.params.id}`;
-    db.query(sql, (err,result)=> {
-        if(err) throw err;
-        res.send('Post updated...');
-    });
-});
-
-app.put('/categories/id/:id',(req,res)=>{
-    let sql = `UPDATE categories SET categorie_name = '${req.body.categorie_name}' WHERE id = ${req.params.id}`;
-    db.query(sql, (err,result)=> {
-        if(err) throw err;
-        res.send('Post updated...');
-    });
-});
-
-app.get('/allproducts', (req,res) => {
-    let sql = 'SELECT * FROM products';
-    db.query(sql, (err,result) => {
-      if(err) throw err;
-      res.send(result);
-    });
-});
-  
-app.get('/allcategories', (req,res) => {
-    let sql = 'SELECT * FROM categories';
-    db.query(sql,(err,result) => {
-      if(err) throw err;
-      res.send(result);
     });
 });
     
@@ -113,48 +63,5 @@ app.get('/allproductsandcategories', (req,res) => {
       res.send(result);
     });
 });
-
-app.get('/products/id/:id',(req,res) => {
-    let sql = `SELECT * FROM products WHERE id = ${req.params.id}`;
-    db.query(sql, (err,result) => {
-      if(err) throw err;
-      res.send(result);
-    });
-});
-
-app.get('/productsdesc', (req,res) => {
-    let sql = 'SELECT * FROM products ORDER BY id DESC';
-    db.query(sql, (err,result) => {
-      if(err) throw err;
-      res.send(result);
-    });
-});
-
-app.get('/categories/id/:id', (req,res) =>{
-    let sql = `SELECT * FROM categories WHERE id = ${req.params.id}`;
-    db.query(sql, (err,result) => {
-      if(err) throw err;
-      res.send(result);
-    });
-});
-
-app.get('/products/product_name/:product_name', (req,res)=>{
-    let sql = `SELECT * FROM products WHERE product_name = '${req.params.product_name}'`;
-    db.query(sql, (err,result) => {
-      if(err) throw err;
-      res.send(result);
-    });
-});
-
-app.delete('/delete/id/:id', (req,res)=>{
-    let sql = `DELETE FROM products WHERE id = ${req.params.id}`;
-    db.query(sql, (err,result) => {
-      if(err) throw err;
-      res.send('Post deleted');
-    });
-});
-  
-  
-  
 
 app.listen(PORT, () => console.log(`Servidor levantado en el puerto ${PORT}`));
